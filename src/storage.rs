@@ -23,8 +23,8 @@ impl Table {
 
 struct Page([u8; PAGE_SIZE]);
 
-const COL_NAME_LENGTH: usize = 32;
-const COL_EMAIL_LENGTH: usize = 255;
+pub const COL_NAME_LENGTH: usize = 32;
+pub const COL_EMAIL_LENGTH: usize = 255;
 
 pub struct Row {
     pub id: u32,

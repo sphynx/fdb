@@ -37,7 +37,7 @@ fn test_many() -> Result<()> {
 }
 
 #[test]
-fn test_long() -> Result<()> {
+fn test_longest_possible() -> Result<()> {
     let timeout = Some(500);
     let mut p = spawn_command(Command::cargo_bin("fdb").unwrap(), timeout)?;
 
@@ -47,5 +47,17 @@ fn test_long() -> Result<()> {
     p.send_line(&format!("insert 1 {} {}", long_name, long_email))?;
     p.send_line("select")?;
     p.exp_string(&format!("(1, {}, {})", long_name, long_email))?;
+    Ok(())
+}
+
+#[test]
+fn test_too_long() -> Result<()> {
+    let timeout = Some(500);
+    let mut p = spawn_command(Command::cargo_bin("fdb").unwrap(), timeout)?;
+
+    let long_name = "a".repeat(33);
+
+    p.send_line(&format!("insert 1 {} {}", long_name, "b"))?;
+    p.exp_string("too long")?;
     Ok(())
 }
