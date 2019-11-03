@@ -121,9 +121,14 @@ impl Row {
     }
 
     pub fn print(&self) {
-        let name = str::from_utf8(&self.name).unwrap();
-        let email = str::from_utf8(&self.email).unwrap();
-        println!("({}, {}, {})", self.id, name, email);
+        let name = str::from_utf8(&self.name).expect("invalid UTF-8 in name");
+        let email = str::from_utf8(&self.email).expect("invalid UTF-8 in email");
+        println!(
+            "({}, {}, {})",
+            self.id,
+            name.trim_end_matches(char::from(0)),
+            email.trim_end_matches(char::from(0))
+        );
     }
 
     pub fn serialise(&self, where_to: &mut [u8]) {
@@ -263,18 +268,16 @@ mod test {
 
     #[test]
     fn row_serialisation_32bytes() {
-        let arr = [b'a'; 32];
-        let username = std::str::from_utf8(&arr).unwrap();
-        let row = Row::new(1, username, "");
+        let username = "a".repeat(32);
+        let row = Row::new(1, &username, "");
         check_serialisation(&row);
     }
 
     #[test]
     #[should_panic]
     fn row_serialisation_too_large_username() {
-        let arr = [b'a'; 33];
-        let username = std::str::from_utf8(&arr).unwrap();
-        let row = Row::new(1, username, "");
+        let username = "a".repeat(33);
+        let row = Row::new(1, &username, "");
         check_serialisation(&row);
     }
 
